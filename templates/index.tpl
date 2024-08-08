@@ -1,6 +1,6 @@
 <html>
     <head>
-        <title>Index{{ " [Hello " + user_id + "]" or "" }}</title>
+        <title>{{ user_id | default("Index") }}</title>
     </head>
     <body>
         index.html

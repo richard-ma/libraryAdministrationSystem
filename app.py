@@ -1,5 +1,5 @@
 from flask import Flask
-from flask import request, session, render_template, redirect
+from flask import request, session, render_template, redirect, url_for
 from book import Book
 from user import User
 from database import db
@@ -12,8 +12,7 @@ db.init_app(app)
 
 @app.route('/')
 def index():
-    user_id = request.args.get('user_id')
-    return render_template('index.tpl', user_id=user_id)
+    return render_template('index.tpl', **request.args)
 
 @app.route('/login', methods=['GET', 'POST'])
 def login():
@@ -26,9 +25,14 @@ def login():
         user = db.one_or_404(db.select(User).filter_by(id=id))
         if user.check_password(password):
             session['user_id'] = id
-            return redirect('/')
+            return redirect(url_for('index', user_id=id))
         else:
-            return redirect('/login')
+            return redirect(url_for('login'))
+
+@app.route('/logout')
+def logout():
+    del session['user_id']
+    return redirect(url_for('index'))
 
 
 if __name__ == "__main__":
